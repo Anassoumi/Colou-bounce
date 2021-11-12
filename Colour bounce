@@ -1,0 +1,32 @@
+import cv2
+
+path = cv2.VideoCapture(0)
+height = 1000
+width = 1000
+path.set(3, height)
+path.set(4, width)
+boxCR = int(height / 2)
+boxCC = int(width / 2)
+snipH = 600
+snipW = 600
+
+deltaX = 1
+deltaY = 1
+while True:
+    ignore, frame = path.read()
+    frameROI = frame[int(boxCR - snipW / 2):int(boxCR + snipW / 2), int(boxCC - snipH / 2):int(boxCC + snipW / 2)]
+    frameROIGRAY = cv2.cvtColor(frameROI, cv2.COLOR_BGR2GRAY)
+    frameROIORIGINAL = cv2.cvtColor(frameROIGRAY, cv2.COLOR_GRAY2BGR)
+    frame[int(boxCR - snipW / 2):int(boxCR + snipW / 2),
+    int(boxCC - snipH / 2):int(boxCC + snipW / 2)] = frameROIORIGINAL
+    boxCR = boxCR + deltaX
+    boxCC = boxCC + deltaY
+    if boxCC+snipH/2 >= height or boxCC-snipH/2 <= 0:
+        deltaX = -deltaX
+    if boxCR+snipW/2 >= width or boxCR-snipW/2 <= 0:
+        deltaY = -deltaY
+
+    cv2.imshow('video', frame)
+
+    if cv2.waitKey(1) & 0xff == ord('q'):
+        break
